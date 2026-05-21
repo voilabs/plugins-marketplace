@@ -1,0 +1,139 @@
+{
+  "id": "google-tag-manager",
+  "name": "Google Tag Manager",
+  "summary": "Inject a Google Tag Manager container into public pages.",
+  "description": "Adds the GTM bootstrap script to the document head and the noscript iframe to the start of the body.",
+  "version": "1.0.0",
+  "category": "analytics",
+  "badge": "GTM",
+  "docsUrl": "https://developers.google.com/tag-platform/tag-manager",
+  "tags": ["analytics", "marketing", "tracking", "google"],
+  "needEncryption": false,
+  "fields": [
+    {
+      "key": "containerId",
+      "label": "Container ID",
+      "description": "Your GTM container identifier, for example GTM-ABC123.",
+      "type": "text",
+      "placeholder": "GTM-ABC123",
+      "required": true,
+      "pattern": "^GTM-[A-Z0-9]+$"
+    },
+    {
+      "key": "dataLayerName",
+      "label": "Data Layer Name",
+      "description": "Use dataLayer unless your GTM container was configured with a custom data layer name.",
+      "type": "text",
+      "placeholder": "dataLayer",
+      "required": true,
+      "defaultValue": "dataLayer",
+      "pattern": "^[a-zA-Z_$][a-zA-Z0-9_$]*$"
+    }
+  ],
+  "frontend": {
+    "components": [
+      {
+        "key": "gtm-settings-panel",
+        "slot": "settings-panel",
+        "label": "Google Tag Manager settings",
+        "description": "Shows guidance for the GTM configuration form.",
+        "component": {
+          "type": "remote",
+          "path": "components/settings.js"
+        },
+        "order": 20
+      },
+      {
+        "key": "gtm-dashboard-card",
+        "slot": "dashboard-card",
+        "label": "Google Tag Manager",
+        "component": {
+          "type": "remote",
+          "path": "components/dashboard-card.js"
+        },
+        "order": 30
+      }
+    ]
+  },
+  "routes": [
+    {
+      "id": "gtm-status",
+      "method": "GET",
+      "path": "/status",
+      "summary": "Returns the configured GTM container.",
+      "requiresInstallation": true,
+      "requiresEnabled": true,
+      "response": {
+        "status": 200,
+        "body": {
+          "ok": true,
+          "containerId": "{{config.containerId}}",
+          "dataLayerName": "{{config.dataLayerName}}"
+        }
+      }
+    }
+  ],
+  "additionalMetaTags": [
+    {
+      "key": "voilabs-plugin-gtm",
+      "name": "voilabs-plugin",
+      "content": "google-tag-manager"
+    }
+  ],
+  "injections": [
+    {
+      "key": "gtm-admin-style",
+      "type": "style",
+      "placement": "admin:head",
+      "src": "assets/admin.css",
+      "condition": {
+        "area": "admin"
+      },
+      "order": 5
+    },
+    {
+      "key": "gtm-head-bootstrap",
+      "type": "script",
+      "placement": "public:head",
+      "condition": {
+        "area": "public"
+      },
+      "order": 10,
+      "content": "(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':Date.now(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s);j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+encodeURIComponent(i)+(l==='dataLayer'?'':'&l='+encodeURIComponent(l));f.parentNode.insertBefore(j,f);})(window,document,'script','{{config.dataLayerName}}','{{config.containerId}}');"
+    },
+    {
+      "key": "gtm-body-noscript",
+      "type": "noscript",
+      "placement": "body:start",
+      "condition": {
+        "area": "public"
+      },
+      "order": 11,
+      "content": "<iframe src=\"https://www.googletagmanager.com/ns.html?id={{config.containerId}}\" height=\"0\" width=\"0\" style=\"display:none;visibility:hidden\"></iframe>"
+    }
+  ],
+  "assets": [
+    {
+      "key": "gtm-admin-css",
+      "type": "style",
+      "url": "assets/admin.css"
+    }
+  ],
+  "permissions": [
+    {
+      "key": "inject-public-html",
+      "label": "Inject public HTML",
+      "description": "Allows this plugin to add GTM tags to public pages.",
+      "default": true
+    }
+  ],
+  "compatibility": {
+    "node": ">=18",
+    "next": ">=13",
+    "react": ">=18",
+    "elysia": ">=1"
+  },
+  "support": {
+    "docs": "https://developers.google.com/tag-platform/tag-manager"
+  }
+}
