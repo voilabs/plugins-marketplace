@@ -1,0 +1,31 @@
+{
+  "id": "google-tag-manager",
+  "name": "Google Tag Manager",
+  "summary": "Injects Google Tag Manager scripts into your application to manage analytics and tracking tags centrally.",
+  "category": "analytics",
+  "fields": [
+    {
+      "key": "trackingId",
+      "label": "GTM Tracking ID",
+      "type": "text",
+      "required": true,
+      "pattern": "^GTM-[A-Z0-9]+$"
+    }
+  ],
+  "injections": [
+    {
+      "key": "gtm-head-script",
+      "type": "html",
+      "placement": "head",
+      "condition": { "area": "public" },
+      "content": "<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','{{config.trackingId}}');</script>"
+    },
+    {
+      "key": "gtm-body-noscript",
+      "type": "html",
+      "placement": "body:start",
+      "condition": { "area": "public" },
+      "content": "<noscript><iframe src=\"https://www.googletagmanager.com/ns.html?id={{config.trackingId}}\" height=\"0\" width=\"0\" style=\"display:none;visibility:hidden\"></iframe></noscript>"
+    }
+  ]
+}
